@@ -1,6 +1,8 @@
-# `wrangler.toml` is only required if we add a Worker; the Pages deployment
-# does not need it. Keeping a minimal stub so contributors can run
-# `wrangler pages dev ./dist` locally.
+"$schema" = "./node_modules/wrangler/config-schema.json"
+
 name = "obr-tht"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = "dist"
+compatibility_date = "2026-04-24"
+preview_urls = true
+
+[assets]
+directory = "./dist"

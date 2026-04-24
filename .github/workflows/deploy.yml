@@ -4,13 +4,13 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
-# Deploys the built `dist/` to Cloudflare Pages using `wrangler pages deploy`.
-# Pushes to `main` create a production deployment; pushes to any other branch
-# create a Pages preview deployment under a sanitized branch name.
+# Deploys the built `dist/` to Cloudflare Workers static assets.
+# Pushes to `main` update the production Worker; pushes to any other branch
+# upload a preview version under a sanitized preview alias.
 #
 # Configure two repository secrets before the first run:
-#   CLOUDFLARE_API_TOKEN  — a token scoped to Pages:Edit
-#   CLOUDFLARE_ACCOUNT_ID — the Cloudflare account id that owns the Pages project
+#   CLOUDFLARE_API_TOKEN  — a token scoped to Edit Cloudflare Workers
+#   CLOUDFLARE_ACCOUNT_ID — the Cloudflare account id that owns the Worker
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -25,27 +25,38 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Cloudflare Pages branch names must be <=28 chars, lowercase,
-      # alphanumerics and single hyphens. Sanitize the Git ref so that
-      # branches like `copilot/create-foo` still get a preview deploy.
-      - name: Compute Pages branch name
-        id: pages_branch
+      # Workers preview aliases must be lowercase, begin with a letter,
+      # only contain letters/numbers/hyphens, and stay within DNS limits
+      # once combined with the worker name.
+      - name: Compute Workers preview alias
+        id: preview_alias
+        if: github.ref != 'refs/heads/main'
         run: |
           raw='${{ github.ref_name }}'
           clean=$(printf '%s' "$raw" \
             | tr '[:upper:]' '[:lower:]' \
-            | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g' \
-            | cut -c1-28 \
+            | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g')
+          case "$clean" in
+            "") clean=preview ;;
+            [a-z]*) ;;
+            *) clean="preview-$clean" ;;
+          esac
+          clean=$(printf '%s' "$clean" \
+            | cut -c1-55 \
             | sed -E 's/-+$//')
           [ -z "$clean" ] && clean=preview
           echo "name=$clean" >> "$GITHUB_OUTPUT"
-      - name: Publish to Cloudflare Pages
+      - name: Deploy production Worker
+        if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # On `main` this produces a production deployment; on every other
-          # branch Cloudflare scopes it to a preview URL
-          # (e.g. https://<branch>.obr-tht.pages.dev).
-          command: pages deploy dist --project-name=obr-tht --branch=${{ steps.pages_branch.outputs.name }}
-
+          command: deploy
+      - name: Upload preview Worker version
+        if: github.ref != 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --preview-alias=${{ steps.preview_alias.outputs.name }}
