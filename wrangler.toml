@@ -1,0 +1,6 @@
+# `wrangler.toml` is only required if we add a Worker; the Pages deployment
+# does not need it. Keeping a minimal stub so contributors can run
+# `wrangler pages dev ./dist` locally.
+name = "obr-tht"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"

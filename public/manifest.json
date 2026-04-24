@@ -1,0 +1,15 @@
+{
+  "name": "Terrain Height Tools",
+  "description": "Paint terrain heights and compute 3D line-of-sight. Port of the FoundryVTT Terrain Height Tools module.",
+  "author": "OBR-THT contributors",
+  "icon": "/logo.svg",
+  "main": "/index.html",
+  "manifest_version": 1,
+  "action": {
+    "title": "Terrain Height Tools",
+    "icon": "/logo.svg",
+    "popoverUrl": "/action.html",
+    "popoverWidth": 360,
+    "popoverHeight": 520
+  }
+}

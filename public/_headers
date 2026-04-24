@@ -1,0 +1,15 @@
+/*
+  CORS + caching headers for the Cloudflare Pages deployment.
+  OBR loads extensions inside an iframe from a different origin, so these
+  resources must be available cross-origin.
+*/
+/*
+  Access-Control-Allow-Origin: *
+  X-Content-Type-Options: nosniff
+
+/manifest.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
