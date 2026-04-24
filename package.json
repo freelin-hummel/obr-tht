@@ -20,8 +20,7 @@
     "@owlbear-rodeo/sdk": "^3.0.0",
     "polygon-clipping": "^0.15.7",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "zustand": "^4.5.5"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
