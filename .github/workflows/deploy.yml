@@ -26,8 +26,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       # Workers preview aliases must be lowercase, begin with a letter,
-      # only contain letters/numbers/hyphens, and stay within DNS limits
-      # once combined with the worker name.
+      # only contain letters/numbers/hyphens, and keep the combined
+      # `<alias>-obr-tht` DNS label within 63 characters, hence the 55-char cap.
       - name: Compute Workers preview alias
         id: preview_alias
         if: github.ref != 'refs/heads/main'
