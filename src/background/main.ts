@@ -36,7 +36,7 @@ async function rerender(): Promise<void> {
   )
     return;
   await renderTerrainLayer(
-    snapshot.scene.cells,
+    snapshot.scene,
     snapshot.grid,
     snapshot.palette,
     snapshot.prefs.showLayer,

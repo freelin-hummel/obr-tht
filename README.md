@@ -14,6 +14,9 @@ between points or tokens, and share the results with your whole table.
 - **Palette-driven terrain painting** — GMs define terrain types (name, colour,
   height, bottom elevation, always-visible flag) and paint cells on any OBR
   grid type: square, hex (pointy & flat top), isometric, and gridless.
+  - **Freeform regions** — drag-to-trace polygons on any map (the only
+    paint mechanism on gridless maps; also useful for irregular shapes on
+    grid maps). Click inside a region in *Erase region* mode to delete it.
 - **Merged outlines** — adjacent cells of the same terrain are drawn as a single
   joined polygon with holes, matching the clean look of the Foundry module.
 - **Per-cell height labels** with configurable units (ft, m, …).
@@ -96,7 +99,6 @@ can load the extension from its cross-origin iframe.
 
 ## Roadmap
 
-- [ ] Freeform painting tool for gridless maps (line / rectangle / polygon).
 - [ ] Cursor-based visibility radius masking.
 - [ ] Icon picker for terrain labels.
 - [ ] Submit to the official OBR extension store.

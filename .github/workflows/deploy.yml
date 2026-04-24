@@ -1,10 +1,13 @@
 name: deploy
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   workflow_dispatch:
 
 # Deploys the built `dist/` to Cloudflare Pages using `wrangler pages deploy`.
+# Pushes to `main` create a production deployment; pushes to any other branch
+# create a Pages preview deployment under that branch's name.
+#
 # Configure two repository secrets before the first run:
 #   CLOUDFLARE_API_TOKEN  — a token scoped to Pages:Edit
 #   CLOUDFLARE_ACCOUNT_ID — the Cloudflare account id that owns the Pages project
@@ -27,4 +30,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=obr-tht --branch=main
+          # GITHUB_REF_NAME is the branch name; Cloudflare uses it to scope
+          # the preview URL (e.g. https://<branch>.obr-tht.pages.dev).
+          command: pages deploy dist --project-name=obr-tht --branch=${{ github.ref_name }}
+

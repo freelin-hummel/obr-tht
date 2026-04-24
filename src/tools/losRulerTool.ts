@@ -28,8 +28,8 @@ async function buildPrisms(): Promise<{ prisms: Prism[]; palette: TerrainType[] 
   const grid = await readGrid();
   const scene = await readScene();
   const { palette } = await readRoom();
-  const regions = mergeCells(scene.cells, grid);
-  const prisms: Prism[] = regions.flatMap((region) => {
+  const cellRegions = mergeCells(scene.cells, grid);
+  const prisms: Prism[] = cellRegions.flatMap((region) => {
     const t = palette.find((p) => p.id === region.terrainId);
     if (!t) return [];
     return [
@@ -41,6 +41,17 @@ async function buildPrisms(): Promise<{ prisms: Prism[]; palette: TerrainType[] 
       },
     ];
   });
+  for (const fr of scene.regions ?? []) {
+    if (fr.points.length < 3) continue;
+    const t = palette.find((p) => p.id === fr.terrainId);
+    if (!t) continue;
+    prisms.push({
+      terrainId: fr.terrainId,
+      rings: [fr.points],
+      zBottom: gridUnitsToPixels(t.elevation, grid),
+      zTop: gridUnitsToPixels(t.elevation + t.height, grid),
+    });
+  }
   return { prisms, palette };
 }
 
