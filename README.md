@@ -35,10 +35,10 @@ between points or tokens, and share the results with your whole table.
 ## Install
 
 Paste this URL into OBR's **Add Extension** dialog once the project is deployed
-to Cloudflare Pages:
+to Cloudflare Workers:
 
 ```
-https://<your-pages-project>.pages.dev/manifest.json
+https://<your-worker>.<your-subdomain>.workers.dev/manifest.json
 ```
 
 (or your custom domain). See "Deployment" below for details.
@@ -79,22 +79,24 @@ tests/             # vitest unit tests (grid math + LoS)
 public/
   manifest.json    # OBR extension manifest
   logo.svg         # icon
-  _headers         # Cloudflare Pages CORS / cache headers
+  _headers         # Cloudflare static-asset CORS / cache headers
 ```
 
-## Deployment — Cloudflare Pages
+## Deployment — Cloudflare Workers
 
-1. Create a Cloudflare Pages project named `obr-tht` (or change the name in
-   `.github/workflows/deploy.yml` and `package.json`).
+1. Create a Cloudflare Worker named `obr-tht` (or change the name in
+   `wrangler.toml`, `.github/workflows/deploy.yml`, and `package.json`).
 2. In GitHub, add two repository secrets:
-   - `CLOUDFLARE_API_TOKEN` — a token with the **Pages:Edit** permission.
+   - `CLOUDFLARE_API_TOKEN` — a token with the **Edit Cloudflare Workers**
+     permission.
    - `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare account id.
 3. Push to `main`. The `deploy` workflow builds `dist/` and publishes it with
-   `wrangler pages deploy`. Pushes to any other branch produce a **preview
-   deployment** under a sanitized branch name (max 28 chars, lowercase,
-   hyphens only) so pull-request builds can be validated end-to-end.
-4. The manifest URL becomes `https://<project>.pages.dev/manifest.json` (or
-   your custom domain). Share that URL with your players.
+   `wrangler deploy`. Pushes to any other branch upload a **preview Worker
+   version** with a sanitized preview alias so pull-request builds can be
+   validated on `workers.dev` without replacing production.
+4. The manifest URL becomes
+   `https://<worker>.<your-subdomain>.workers.dev/manifest.json` (or your
+   custom domain). Share that URL with your players.
 
 The `public/_headers` file configures `Access-Control-Allow-Origin: *` so OBR
 can load the extension from its cross-origin iframe.
