@@ -90,7 +90,9 @@ public/
    - `CLOUDFLARE_API_TOKEN` — a token with the **Pages:Edit** permission.
    - `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare account id.
 3. Push to `main`. The `deploy` workflow builds `dist/` and publishes it with
-   `wrangler pages deploy`.
+   `wrangler pages deploy`. Pushes to any other branch produce a **preview
+   deployment** under a sanitized branch name (max 28 chars, lowercase,
+   hyphens only) so pull-request builds can be validated end-to-end.
 4. The manifest URL becomes `https://<project>.pages.dev/manifest.json` (or
    your custom domain). Share that URL with your players.
 
