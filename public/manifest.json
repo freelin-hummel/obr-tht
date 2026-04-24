@@ -9,8 +9,10 @@
   "action": {
     "title": "Terrain Height Tools",
     "icon": "/logo.svg",
-    "popoverUrl": "/action.html",
-    "popoverWidth": 360,
-    "popoverHeight": 520
+    "popover": {
+      "popoverUrl": "/action.html",
+      "popoverWidth": 360,
+      "popoverHeight": 520
+    }
   }
 }
