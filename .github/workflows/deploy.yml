@@ -1,0 +1,30 @@
+name: deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Deploys the built `dist/` to Cloudflare Pages using `wrangler pages deploy`.
+# Configure two repository secrets before the first run:
+#   CLOUDFLARE_API_TOKEN  — a token scoped to Pages:Edit
+#   CLOUDFLARE_ACCOUNT_ID — the Cloudflare account id that owns the Pages project
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=obr-tht --branch=main
