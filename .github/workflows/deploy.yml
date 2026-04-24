@@ -6,7 +6,7 @@ on:
 
 # Deploys the built `dist/` to Cloudflare Pages using `wrangler pages deploy`.
 # Pushes to `main` create a production deployment; pushes to any other branch
-# create a Pages preview deployment under that branch's name.
+# create a Pages preview deployment under a sanitized branch name.
 #
 # Configure two repository secrets before the first run:
 #   CLOUDFLARE_API_TOKEN  — a token scoped to Pages:Edit
