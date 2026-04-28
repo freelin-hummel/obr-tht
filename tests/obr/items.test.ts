@@ -42,8 +42,8 @@ describe("OBR item utilities", () => {
   });
 
   test("diffs created, updated, and deleted items", () => {
-    const oldItem = makeItem("same", { lastModified: "1" });
-    const updatedItem = makeItem("same", { lastModified: "2" });
+    const oldItem = makeItem("same", { lastModified: 1 as never });
+    const updatedItem = makeItem("same", { lastModified: 2 as never });
     const deletedItem = makeItem("deleted");
     const createdItem = makeItem("created");
 

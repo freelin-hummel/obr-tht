@@ -40,7 +40,7 @@ export async function patchMetadataValue<T extends object>(
   fallback: T,
 ): Promise<T> {
   const current = await readMetadataValue(api, key, fallback);
-  const next = { ...current, ...patch } as T;
+  const next = Object.assign({}, current, patch);
   await writeMetadataValue(api, key, next);
   return next;
 }

@@ -64,7 +64,9 @@ export class GridStateCache {
 
   get current(): GridInfo {
     if (!this.#value) {
-      throw new Error("Grid state has not been initialized yet");
+      throw new Error(
+        "GridStateCache not initialized. Call init() and await its result before accessing current.",
+      );
     }
     return this.#value;
   }

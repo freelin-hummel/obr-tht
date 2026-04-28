@@ -81,20 +81,11 @@ export async function writeSettings(settings: RoomSettings): Promise<void> {
 }
 
 export function subscribeRoom(handler: (s: RoomState) => void): () => void {
-  const emit = async (): Promise<void> => {
-    const room = await readRoom();
-    handler(room);
-  };
-  const stopPalette = paletteStore.subscribe(() => {
-    void emit();
+  return roomMetadata.onMetadataChange((metadata) => {
+    const palette = (metadata[META_KEY.palette] as TerrainType[] | undefined) ?? [];
+    const settings = (metadata[META_KEY.settings] as RoomSettings | undefined) ?? DEFAULT_SETTINGS;
+    handler({ palette, settings });
   });
-  const stopSettings = settingsStore.subscribe(() => {
-    void emit();
-  });
-  return () => {
-    stopPalette();
-    stopSettings();
-  };
 }
 
 export { genId };
