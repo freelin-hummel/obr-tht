@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import OBR from "@owlbear-rodeo/sdk";
 import { createRoot } from "react-dom/client";
+import { runWhenReady, usePopoverResizer } from "../../obr";
 import { readPrefs, subscribePrefs, writePrefs } from "../../state/userPrefs";
+import { TOOL_ID } from "../../constants";
 
 /**
  * Small tool-options popover. Currently used by the LoS ruler to edit the
  * default start / end elevations.
  */
 function ToolOptions() {
+  const resizeRef = usePopoverResizer(`${TOOL_ID.los}/popover`, 140, 280, 220, 360);
   const [prefs, setPrefs] = useState<Awaited<ReturnType<typeof readPrefs>> | null>(null);
   useEffect(() => {
     let stop = () => {};
@@ -19,7 +21,7 @@ function ToolOptions() {
   }, []);
   if (!prefs) return null;
   return (
-    <div className="tht-panel">
+    <div className="tht-panel" ref={resizeRef}>
       <h2>Line of sight</h2>
       <div className="tht-row">
         <label>
@@ -54,5 +56,4 @@ function ToolOptions() {
 }
 
 const root = createRoot(document.getElementById("root")!);
-if (typeof OBR?.onReady === "function") OBR.onReady(() => root.render(<ToolOptions />));
-else root.render(<ToolOptions />);
+runWhenReady(() => root.render(<ToolOptions />));

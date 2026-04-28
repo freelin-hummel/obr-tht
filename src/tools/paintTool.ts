@@ -14,10 +14,11 @@
  * walls don't align to cells).
  */
 
-import OBR, { type ToolContext, type ToolEvent } from "@owlbear-rodeo/sdk";
+import { type ToolContext, type ToolEvent } from "@owlbear-rodeo/sdk";
 import { TOOL_ID } from "../constants";
 import { cellKey, cellNeighbours, worldToCell } from "../geometry/grid";
 import { simplify, pointInPolygon } from "../geometry/freeform";
+import { createTool, createToolMode } from "../obr";
 import { readScene, writeScene } from "../state/sceneMeta";
 import { readGrid } from "../state/gridInfo";
 import { readPrefs, writePrefs } from "../state/userPrefs";
@@ -125,7 +126,7 @@ async function rememberTerrain(id: string): Promise<void> {
 const activeStrokes = new Map<string, Vec2[]>();
 
 export function registerPaintTool(): void {
-  OBR.tool.create({
+  void createTool({
     id: TOOL_ID.paint,
     icons: [
       {
@@ -151,7 +152,7 @@ export function registerPaintTool(): void {
 
   for (const mode of ["paint", "erase", "fill", "region", "region-erase"] as const) {
     const id = `${TOOL_ID.paint}/${mode}`;
-    OBR.tool.createMode({
+    void createToolMode({
       id,
       icons: [
         {

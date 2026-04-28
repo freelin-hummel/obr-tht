@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import OBR from "@owlbear-rodeo/sdk";
 import { readRoom, subscribeRoom } from "../../state/roomMeta";
 import type { TerrainType } from "../../types";
 import { createRoot } from "react-dom/client";
+import { runWhenReady, usePopoverResizer } from "../../obr";
 
 function Viewer() {
+  const resizeRef = usePopoverResizer("com.obr-tht/viewer", 180, 520, 260, 420);
   const [palette, setPalette] = useState<TerrainType[]>([]);
   useEffect(() => {
     let stop = () => {};
@@ -16,7 +17,7 @@ function Viewer() {
     return () => stop();
   }, []);
   return (
-    <div className="tht-panel">
+    <div className="tht-panel" ref={resizeRef}>
       <h2>Terrain viewer</h2>
       {palette.length === 0 && <div className="tht-muted">No terrain defined.</div>}
       {palette.map((t) => (
@@ -33,5 +34,4 @@ function Viewer() {
 }
 
 const root = createRoot(document.getElementById("root")!);
-if (typeof OBR?.onReady === "function") OBR.onReady(() => root.render(<Viewer />));
-else root.render(<Viewer />);
+runWhenReady(() => root.render(<Viewer />));

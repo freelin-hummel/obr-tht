@@ -5,8 +5,8 @@
  * read by every client.
  */
 
-import OBR from "@owlbear-rodeo/sdk";
 import { DEFAULT_COLORS, META_KEY } from "../constants";
+import { createMetadataStore, createObjectMetadataStore, roomMetadata } from "../obr";
 import type { RoomSettings, TerrainType } from "../types";
 
 const DEFAULT_SETTINGS: RoomSettings = {
@@ -61,29 +61,40 @@ export interface RoomState {
   settings: RoomSettings;
 }
 
+const paletteStore = createMetadataStore<TerrainType[]>(roomMetadata, META_KEY.palette, []);
+const settingsStore = createObjectMetadataStore(roomMetadata, META_KEY.settings, DEFAULT_SETTINGS);
+
 export async function readRoom(): Promise<RoomState> {
-  const meta = await OBR.room.getMetadata();
-  const palette = (meta[META_KEY.palette] as TerrainType[] | undefined) ?? [];
-  const settings =
-    (meta[META_KEY.settings] as RoomSettings | undefined) ?? DEFAULT_SETTINGS;
-  return { palette, settings };
+  const [palette, settings] = await Promise.all([paletteStore.read(), settingsStore.read()]);
+  return {
+    palette,
+    settings: { ...DEFAULT_SETTINGS, ...settings },
+  };
 }
 
 export async function writePalette(palette: TerrainType[]): Promise<void> {
-  await OBR.room.setMetadata({ [META_KEY.palette]: palette });
+  await paletteStore.write(palette);
 }
 
 export async function writeSettings(settings: RoomSettings): Promise<void> {
-  await OBR.room.setMetadata({ [META_KEY.settings]: settings });
+  await settingsStore.write(settings);
 }
 
 export function subscribeRoom(handler: (s: RoomState) => void): () => void {
-  return OBR.room.onMetadataChange((meta) => {
-    const palette = (meta[META_KEY.palette] as TerrainType[] | undefined) ?? [];
-    const settings =
-      (meta[META_KEY.settings] as RoomSettings | undefined) ?? DEFAULT_SETTINGS;
-    handler({ palette, settings });
+  const emit = async (): Promise<void> => {
+    const room = await readRoom();
+    handler(room);
+  };
+  const stopPalette = paletteStore.subscribe(() => {
+    void emit();
   });
+  const stopSettings = settingsStore.subscribe(() => {
+    void emit();
+  });
+  return () => {
+    stopPalette();
+    stopSettings();
+  };
 }
 
 export { genId };

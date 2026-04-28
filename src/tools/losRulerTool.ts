@@ -13,6 +13,7 @@ import OBR, {
   type PathCommand,
 } from "@owlbear-rodeo/sdk";
 import { TOOL_ID, ITEM_TAG } from "../constants";
+import { createTool, createToolAction, createToolMode, openPopover } from "../obr";
 import { gridUnitsToPixels, pixelsToGridUnits } from "../geometry/grid";
 import { computeLos, type Prism, type LosSegment } from "../geometry/los";
 import { mergeCells } from "../geometry/merge";
@@ -142,13 +143,13 @@ async function drawRuler(
 }
 
 export function registerLosTool(): void {
-  OBR.tool.create({
+  void createTool({
     id: TOOL_ID.los,
     icons: [{ icon: "/logo.svg", label: "Line of Sight Ruler" }],
     shortcut: "L",
   });
 
-  OBR.tool.createAction({
+  void createToolAction({
     id: `${TOOL_ID.los}/settings`,
     icons: [
       {
@@ -158,7 +159,7 @@ export function registerLosTool(): void {
       },
     ],
     async onClick() {
-      await OBR.popover.open({
+      await openPopover({
         id: `${TOOL_ID.los}/popover`,
         url: "/tool.html?tool=los",
         width: 260,
@@ -167,7 +168,7 @@ export function registerLosTool(): void {
     },
   });
 
-  OBR.tool.createMode({
+  void createToolMode({
     id: `${TOOL_ID.los}/default`,
     icons: [{ icon: "/logo.svg", label: "Measure LoS", filter: { activeTools: [TOOL_ID.los] } }],
     async onToolDragStart(_context: ToolContext, event: ToolEvent) {

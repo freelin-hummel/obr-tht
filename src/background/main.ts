@@ -9,6 +9,7 @@ import OBR from "@owlbear-rodeo/sdk";
 import { registerPaintTool } from "../tools/paintTool";
 import { registerLosTool } from "../tools/losRulerTool";
 import { registerTokenLosTool } from "../tools/tokenLosTool";
+import { runWhenReady, sceneReadyPromise } from "../obr";
 import { readScene, subscribeScene } from "../state/sceneMeta";
 import { readRoom, subscribeRoom } from "../state/roomMeta";
 import { readPrefs, subscribePrefs } from "../state/userPrefs";
@@ -63,7 +64,7 @@ async function onSceneReady(ready: boolean): Promise<void> {
   await rerender();
 }
 
-OBR.onReady(async () => {
+runWhenReady(async () => {
   registerPaintTool();
   registerLosTool();
   registerTokenLosTool();
@@ -87,6 +88,8 @@ OBR.onReady(async () => {
     void rerender();
   });
 
-  OBR.scene.isReady().then(onSceneReady);
-  OBR.scene.onReadyChange(onSceneReady);
+  void sceneReadyPromise().then(() => onSceneReady(true));
+  OBR.scene.onReadyChange((ready) => {
+    void onSceneReady(ready);
+  });
 });

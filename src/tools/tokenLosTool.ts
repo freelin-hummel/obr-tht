@@ -6,6 +6,7 @@
 
 import OBR, { type Image, type Item } from "@owlbear-rodeo/sdk";
 import { EXT_ID, META_KEY } from "../constants";
+import { createContextMenu } from "../obr";
 import { __losInternal } from "./losRulerTool";
 import { readPrefs } from "../state/userPrefs";
 
@@ -67,7 +68,7 @@ async function redraw(): Promise<void> {
 }
 
 export function registerTokenLosTool(): void {
-  OBR.contextMenu.create({
+  void createContextMenu({
     id: CONTEXT_SOURCE,
     icons: [
       {
@@ -82,7 +83,7 @@ export function registerTokenLosTool(): void {
     },
   });
 
-  OBR.contextMenu.create({
+  void createContextMenu({
     id: CONTEXT_TARGET,
     icons: [
       {

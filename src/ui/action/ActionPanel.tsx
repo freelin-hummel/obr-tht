@@ -8,6 +8,7 @@ import {
   writePalette,
   writeSettings,
 } from "../../state/roomMeta";
+import { openPopover, useActionResizer } from "../../obr";
 import { readPrefs, subscribePrefs, writePrefs } from "../../state/userPrefs";
 import type { RoomSettings, TerrainType, UserPrefs } from "../../types";
 import { DEFAULT_COLORS } from "../../constants";
@@ -17,6 +18,7 @@ import { DEFAULT_COLORS } from "../../constants";
  * Shows the terrain palette (editable by GMs) and the user's view settings.
  */
 export function ActionPanel() {
+  const resizeRef = useActionResizer(220, 720);
   const [isGM, setIsGM] = useState(false);
   const [palette, setPalette] = useState<TerrainType[]>([]);
   const [settings, setSettings] = useState<RoomSettings>({
@@ -120,7 +122,7 @@ export function ActionPanel() {
   }
 
   async function openViewer() {
-    await OBR.popover.open({
+    await openPopover({
       id: "com.obr-tht/viewer",
       url: "/viewer.html",
       width: 320,
@@ -129,7 +131,7 @@ export function ActionPanel() {
   }
 
   return (
-    <div className="tht-panel">
+    <div className="tht-panel" ref={resizeRef}>
       <h2>Terrain Height Tools</h2>
 
       {prefs && (
